@@ -6,4 +6,4 @@ The full ACS dataset is too large to upload, but is available through IPUMS. Fol
 You can select any variable and sample. In my full dataset, I include the following variables (in addition to automatically selected variables): STATEICP, HHINCOME, YNGCH, SEX, AGE, MARST, RACE, EDUC, EDUCD. I download samples from the years 2005-2014.
 
 
-The cleaned Florida code is also too large to uplaod. You can access it through this link: https://drive.google.com/file/d/1LLLeF_V0hKAL0gHf8kQuSUJ5D3ptfFfR/view?usp=sharing
+The cleaned Florida data is also too large to uplaod. You can access it through this link: https://drive.google.com/file/d/1LLLeF_V0hKAL0gHf8kQuSUJ5D3ptfFfR/view?usp=sharing
