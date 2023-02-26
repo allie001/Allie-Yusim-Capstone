@@ -1,4 +1,4 @@
-# Allie-Yusim-Capstone
+# The Impact of Universal Public Preschool on Maternal Education Outcomes: Evidence from Florida and Washington, DC
 The data, code, and write up for my Capstone project. Analysis of the impact of state preschool programs on maternal educational outcomes in DC and Florida.
 
 The full ACS dataset is too large to upload, but is available through IPUMS. Follow this link: https://usa.ipums.org/usa-action/variables/group
