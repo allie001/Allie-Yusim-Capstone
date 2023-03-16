@@ -1,0 +1,288 @@
+---
+title: "DC Summary Stats"
+output: html_notebook
+---
+
+***NOTE! Run this after you've already run DC Analysis so all the datasets are loaded.***
+
+
+## Bandwidth specific summary stats
+```{r}
+#DC in 2014
+
+treatment14 <- subset(dc5yrs_educ, dc5yrs_educ$YNGCH < 9)
+control14 <- subset(dc5yrs_educ, dc5yrs_educ$YNGCH >= 9)
+
+#percent married, treatment
+marrieddc14_treat <- (length(which(treatment14$MARST == 1))/length(treatment14$MARST)) *100
+print(marrieddc14_treat)
+
+#percent married, control
+marrieddc14_control <- (length(which(control14$MARST == 1))/length(control14$MARST)) *100
+print(marrieddc14_control)
+
+#race, treatment
+racedc14_treat <- treatment14 %>% group_by(treatment14$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc14_treat
+
+#race, control
+racedc14_control <- control14 %>% group_by(control14$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc14_control
+
+#household income, age, education, treatment
+sumstats2014dc_treat <- select(treatment14, HHINCOME, AGE, MYEDUC)
+summary(sumstats2014dc_treat)
+
+#household income, age, control
+sumstats2014dc_control <- select(control14, HHINCOME, AGE, MYEDUC)
+summary(sumstats2014dc_control)
+
+#number of degrees per year, treatment
+print((length(which(treatment14$EDUCD == 81))/length(treatment14$EDUCD)) *100)
+print((length(which(treatment14$EDUCD == 101))/length(treatment14$EDUCD)) *100)
+print((length(which(treatment14$EDUCD == 114 | treatment14$EDUCD == 115 | treatment14$EDUCD == 116))/length(treatment14$EDUCD)) *100)
+
+#number of degrees per year, control
+print((length(which(control14$EDUCD == 81))/length(control14$EDUCD)) *100)
+print((length(which(control14$EDUCD == 101))/length(control14$EDUCD)) *100)
+print((length(which(control14$EDUCD == 114 | control14$EDUCD == 115 | control14$EDUCD ==  116))/length(control14$EDUCD)) *100)
+```
+
+```{r}
+#DC in 2013
+
+treatment13 <- subset(dc4yrs_educ, dc4yrs_educ$YNGCH < 8)
+control13 <- subset(dc4yrs_educ, dc4yrs_educ$YNGCH >= 8)
+
+#percent married, treatment
+marrieddc13_treat <- (length(which(treatment13$MARST == 1))/length(treatment13$MARST)) *100
+print(marrieddc13_treat)
+
+#percent married, control
+marrieddc13_control <- (length(which(control13$MARST == 1))/length(control13$MARST)) *100
+print(marrieddc13_control)
+
+#race, treatment
+racedc13_treat <- treatment13 %>% group_by(treatment13$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc13_treat
+
+#race, control
+racedc13_control <- control13 %>% group_by(control13$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc13_control
+
+#household income, age, education, treatment
+sumstats2013dc_treat <- select(treatment13, HHINCOME, AGE, MYEDUC)
+summary(sumstats2013dc_treat)
+
+#household income, age, education, control
+sumstats2013dc_control <- select(control13, HHINCOME, AGE, MYEDUC)
+summary(sumstats2013dc_control)
+
+#number of degrees per year, treatment
+print((length(which(treatment13$EDUCD == 81))/length(treatment13$EDUCD)) *100)
+print((length(which(treatment13$EDUCD == 101))/length(treatment13$EDUCD)) *100)
+print((length(which(treatment13$EDUCD == 114 | treatment13$EDUCD == 115 | treatment13$EDUCD == 116))/length(treatment13$EDUCD)) *100)
+
+#number of degrees per year, control
+print((length(which(control13$EDUCD == 81))/length(control13$EDUCD)) *100)
+print((length(which(control13$EDUCD == 101))/length(control13$EDUCD)) *100)
+print((length(which(control13$EDUCD == 114 | control13$EDUCD == 115 | control13$EDUCD ==  116))/length(control13$EDUCD)) *100)
+```
+
+```{r}
+#DC in 2012
+
+treatment12 <- subset(dc3yrs_educ, dc3yrs_educ$YNGCH < 7)
+control12 <- subset(dc3yrs_educ, dc3yrs_educ$YNGCH >= 7)
+
+#percent married, treatment
+marrieddc12_treat <- (length(which(treatment12$MARST == 1))/length(treatment12$MARST)) *100
+print(marrieddc12_treat)
+
+#percent married, control
+marrieddc12_control <- (length(which(control12$MARST == 1))/length(control12$MARST)) *100
+print(marrieddc12_control)
+
+#race, treatment
+racedc12_treat <- treatment12 %>% group_by(treatment12$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc12_treat
+
+#race, control
+racedc12_control <- control12 %>% group_by(control12$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc12_control
+
+#household income, age, education, treatment
+sumstats2012dc_treat <- select(treatment12, HHINCOME, AGE, MYEDUC)
+summary(sumstats2012dc_treat)
+
+#household income, age, education, control
+sumstats2012dc_control <- select(control12, HHINCOME, AGE, MYEDUC)
+summary(sumstats2012dc_control)
+
+#number of degrees per year, treatment
+print((length(which(treatment12$EDUCD == 81))/length(treatment12$EDUCD)) *100)
+print((length(which(treatment12$EDUCD == 101))/length(treatment12$EDUCD)) *100)
+print((length(which(treatment12$EDUCD == 114 | treatment12$EDUCD == 115 | treatment12$EDUCD == 116))/length(treatment12$EDUCD)) *100)
+
+#number of degrees per year, control
+print((length(which(control12$EDUCD == 81))/length(control12$EDUCD)) *100)
+print((length(which(control12$EDUCD == 101))/length(control12$EDUCD)) *100)
+print((length(which(control12$EDUCD == 114 | control12$EDUCD == 115 | control12$EDUCD ==  116))/length(control12$EDUCD)) *100)
+```
+
+```{r}
+#DC in 2011
+
+treatment11 <- subset(dc2yrs_educ, dc2yrs_educ$YNGCH < 6)
+control11 <- subset(dc2yrs_educ, dc2yrs_educ$YNGCH >= 6)
+
+#percent married, treat
+marrieddc11_treat <- (length(which(treatment11$MARST == 1))/length(treatment11$MARST)) *100
+print(marrieddc11_treat)
+
+#percent married, control
+marrieddc11_control <- (length(which(control11$MARST == 1))/length(control11$MARST)) *100
+print(marrieddc11_control)
+
+#race, treat
+racedc11_treat <- treatment11 %>% group_by(treatment11$RACE) %>% summarise(Percentage=n()/nrow(.))
+
+#race, control
+racedc11_control <- control11 %>% group_by(control11$RACE) %>% summarise(Percentage=n()/nrow(.))
+
+#household income, age, education, treat
+sumstats2011dc_treat <- select(treatment11, HHINCOME, AGE, MYEDUC)
+summary(sumstats2011dc_treat)
+
+#household income, age, education, control
+sumstats2011dc_control <- select(control11, HHINCOME, AGE, MYEDUC)
+summary(sumstats2011dc_control)
+
+#number of degrees per year, treatment
+print((length(which(treatment11$EDUCD == 81))/length(treatment11$EDUCD)) *100)
+print((length(which(treatment11$EDUCD == 101))/length(treatment11$EDUCD)) *100)
+print((length(which(treatment11$EDUCD == 114 | treatment11$EDUCD == 115 | treatment11$EDUCD == 116))/length(treatment11$EDUCD)) *100)
+
+#number of degrees per year, control
+print((length(which(control11$EDUCD == 81))/length(control11$EDUCD)) *100)
+print((length(which(control11$EDUCD == 101))/length(control11$EDUCD)) *100)
+print((length(which(control11$EDUCD == 114 | control11$EDUCD == 115 | control11$EDUCD ==  116))/length(control11$EDUCD)) *100)
+```
+
+## General summary stats (all moms)
+
+```{r}
+#DC in 2009
+
+#separate all moms in 2009 into subset
+DCin2009 <- subset(dcmoms, dcmoms$YEAR == 2009)
+
+#percent married
+marrieddc09 <- (length(which(DCin2009$MARST == 1))/length(DCin2009$MARST)) *100
+print(marrieddc09)
+
+#percent immigrant (defined as born outside the US)
+immigrantdc09 <- (length(which(DCin2009$BPL >= 100))/length(DCin2009$BPL)) *100
+print(immigrantdc09)
+
+#race
+racedc09 <- DCin2009 %>% group_by(DCin2009$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc09
+
+#household income, age, education
+sumstats2009dc <- select(DCin2009, HHINCOME, AGE, MYEDUC)
+summary(sumstats2009dc)
+```
+
+```{r}
+#DC in 2011
+
+#separate all moms in 2011 into subset
+DCin2011 <- subset(dcmoms, dcmoms$YEAR == 2011)
+
+#percent married
+marrieddc11 <- (length(which(DCin2011$MARST == 1))/length(DCin2011$MARST)) *100
+print(marrieddc11)
+
+#percent immigrant (defined as born outside the US)
+immigrantdc11 <- (length(which(DCin2011$BPL >= 100))/length(DCin2011$BPL)) *100
+print(immigrantdc11)
+
+#race
+racedc11 <- DCin2011 %>% group_by(DCin2011$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc11
+
+#household income, age, education
+sumstats2011dc <- select(DCin2011, HHINCOME, AGE, MYEDUC)
+summary(sumstats2011dc)
+```
+
+```{r}
+#DC in 2012
+
+#separate all moms in 2012 into subset
+DCin2012 <- subset(dcmoms, dcmoms$YEAR == 2012)
+
+#percent married
+marrieddc12 <- (length(which(DCin2012$MARST == 1))/length(DCin2012$MARST)) *100
+print(marrieddc12)
+
+#percent immigrant (defined as born outside the US)
+immigrantdc12 <- (length(which(DCin2012$BPL >= 100))/length(DCin2012$BPL)) *100
+print(immigrantdc12)
+
+#race
+racedc12 <- DCin2012 %>% group_by(DCin2012$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc12
+
+#household income, age, education
+sumstats2012dc <- select(DCin2012, HHINCOME, AGE, MYEDUC)
+summary(sumstats2012dc)
+```
+
+```{r}
+#DC in 2013
+
+#separate all moms in 2013 into subset
+DCin2013 <- subset(dcmoms, dcmoms$YEAR == 2013)
+
+#percent married
+marrieddc13 <- (length(which(DCin2013$MARST == 1))/length(DCin2013$MARST)) *100
+print(marrieddc13)
+
+#percent immigrant (defined as born outside the US)
+immigrantdc13 <- (length(which(DCin2013$BPL >= 100))/length(DCin2013$BPL)) *100
+print(immigrantdc13)
+
+#race
+racedc13 <- DCin2013 %>% group_by(DCin2013$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc13
+
+#household income, age, education
+sumstats2013dc <- select(DCin2013, HHINCOME, AGE, MYEDUC)
+summary(sumstats2013dc)
+```
+
+```{r}
+#DC in 2014 (5 years after implementation)
+
+#seperate all moms in 2014 into subset
+DCin2014 <- subset(dcmoms, dcmoms$YEAR == 2014)
+
+#percent married
+marrieddc14 <- (length(which(DCin2014$MARST == 1))/length(DCin2014$MARST)) *100
+print(marrieddc14)
+
+#percent immigrant (defined as born outside the US)
+immigrantdc14 <- (length(which(DCin2014$BPL >= 100))/length(DCin2014$BPL)) *100
+print(immigrantdc14)
+
+#race
+racedc14 <- DCin2014 %>% group_by(DCin2014$RACE) %>% summarise(Percentage=n()/nrow(.))
+racedc14
+
+#household income, age, education
+sumstats2014dc <- select(DCin2014, HHINCOME, AGE, MYEDUC)
+summary(sumstats2014dc)
+```
+

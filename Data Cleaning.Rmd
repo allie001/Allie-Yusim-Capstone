@@ -1,0 +1,78 @@
+---
+title: "Data Cleaning"
+output: html_notebook
+---
+
+```{r Libraries, warning=FALSE}
+#load libraries
+library(ipumsr)
+library(dplyr)
+library(rdrobust)
+library(ggplot2)
+library(rddtools)
+library(gridExtra)
+```
+
+```{r Data}
+#load ACS data
+acsddi <- read_ipums_ddi("usa_00007.xml")
+acs <- read_ipums_micro(acsddi)
+```
+
+## Data Cleaning
+```{r subgroups and relevant variables}
+#make subgroups
+parents <- subset(acs, acs$YNGCH <= 18)
+
+#turn ACS EDUC variable into years in school
+parents$MYEDUC <- NA
+parents$MYEDUC[parents$EDUC == 0] <- 0
+parents$MYEDUC[parents$EDUC == 01] <- 3
+parents$MYEDUC[parents$EDUC == 02] <- 8
+parents$MYEDUC[parents$EDUC == 03] <- 10
+parents$MYEDUC[parents$EDUC == 04] <- 11
+parents$MYEDUC[parents$EDUC == 05] <- 12
+parents$MYEDUC[parents$EDUC == 06] <- 13
+parents$MYEDUC[parents$EDUC == 07] <- 14
+parents$MYEDUC[parents$EDUC == 08] <- 15
+parents$MYEDUC[parents$EDUC == 09] <- 16
+parents$MYEDUC[parents$EDUC == 10] <- 17
+parents$MYEDUC[parents$EDUC == 11] <- 18
+parents$MYEDUC[parents$EDUCD == 110] <- 18 #5+ years of college
+parents$MYEDUC[parents$EDUCD == 111] <- 19 #6 years of college
+parents$MYEDUC[parents$EDUCD == 112] <- 20 #7 years of college
+parents$MYEDUC[parents$EDUCD == 113] <- 21 #8+ years of college
+parents$MYEDUC[parents$EDUCD == 114] <- 19 #Master's degree (assuming 2 years)
+parents$MYEDUC[parents$EDUCD == 115] <- 20 #Professional degree beyond a bachelor's degree (assuming 3 years)
+parents$MYEDUC[parents$EDUCD == 116] <- 24 #doctorate degree (assuming 4 years of undergrad + 2 years masters + 6 years PhD)
+
+#make binary married/not married variable
+parents$married <- if_else(parents$MARST == 1, 1, 0)
+
+#make binary race variables
+parents$white <- if_else(parents$RACE == 1, 1, 0)
+parents$black <- if_else(parents$RACE == 2, 1, 0)
+parents$asian <- if_else(parents$RACE == 4 | parents$RACE == 5 | parents$RACE == 6, 1, 0)
+parents$otherormixedrace <- if_else(parents$RACE == 7 | parents$RACE == 8 | parents$RACE == 9, 1, 0)
+
+#separate moms
+moms <- subset(parents, parents$SEX == 2)
+
+#binary variable for moms with college degrees: 
+
+#101 = bachelor’s degree
+#081 = associate’s degree
+#114 = master’s degree
+#115 = professional degree beyond bachelors
+#116 = doctoral degree
+
+moms$bachelor <- if_else(moms$EDUCD == 101 | moms$EDUCD == 114 | moms$EDUCD == 115 | moms$EDUCD == 116, 1, 0)
+moms$associates_or_up <- if_else(moms$EDUCD == 101 | moms$EDUCD == 81 | moms$EDUCD == 114 | moms$EDUCD == 115 | moms$EDUCD == 116, 1, 0)
+moms$postgrad <- if_else(moms$EDUCD == 114 | moms$EDUCD == 115 | moms$EDUCD == 116, 1, 0)
+
+#separate moms by state
+dcmoms <- subset(moms, moms$STATEICP == 98)
+floridamoms <- subset(moms, moms$STATEICP == 43)
+
+#use dcmoms and floridamoms as the github code!
+```
