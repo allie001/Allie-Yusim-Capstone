@@ -1,0 +1,735 @@
+---
+title: "Florida"
+output: html_notebook
+---
+
+***NOTE! This uses cleaned data. You can run this on its own if you are using the cleaned data file from GitHub. If you are using raw ACS sata, run the "Data Cleaning" file before this.***
+
+```{r Libraries, eval=FALSE, warning=FALSE, include=FALSE}
+#load libraries
+library(ipumsr)
+library(dplyr)
+library(rdrobust)
+library(ggplot2)
+library(rddtools)
+```
+
+```{r}
+# load cleaned data
+floridamoms <- read.csv("clean_data_fl.csv")
+```
+
+Below, I run a regression discontinuity analysis using Florida data. I create a model for 2, 3, 4, and 5 years after Florida's preschool program was implemented. My running variable is the age of a woman's youngest child. First, I use educational attainment and the rate of mothers with college degrees as my outcome variables.
+
+### Educational Attainment
+
+```{r Florida 5 years educ}
+#Florida five years after implementation, educational attainment
+
+#create initial subset
+fl5yrs_educ <- subset(floridamoms, floridamoms$YEAR == 2010)
+
+#create data table for regression
+fl5yrs_reg <- rdd_data(y = fl5yrs_educ$MYEDUC, x = fl5yrs_educ$YNGCH, cutpoint = 10)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl5yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara5 <- rdd_reg_np(rdd_object=fl5yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl5yrs_educ <- subset(fl5yrs_educ, fl5yrs_educ$YNGCH >= 5 & fl5yrs_educ$YNGCH <= 15)
+  
+#plot regression discontinuity graph
+fl_educ_plot5 <- rdplot(fl5yrs_educ$MYEDUC, x = fl5yrs_educ$YNGCH, c = 10, p = 1, col.dots = "black", col.lines = "black", title = "2010", x.label = "Age of Youngest Child", y.label = "Years in School")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara5, from=2, to=18, by=1, plot = FALSE)
+fl_educ_bw5 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 5.368483, y = -0.28282) +
+  ggtitle("2010") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 4 years educ}
+#Florida 4 years after implementation, educational attainment
+
+#create initial subset
+fl4yrs_educ <- subset(floridamoms, floridamoms$YEAR == 2009)
+
+#create data table for regression
+fl4yrs_reg <- rdd_data(y = fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=fl4yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_educ_plot4 <- rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, masspoints = "off", col.dots = "black", col.lines = "black", title = "2009", x.label = "Age of Youngest Child", y.label = "Years in school")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara4, from=2, to=18, by=1, plot = FALSE)
+fl_educ_bw4 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 7.819367, y = 0.076268) +
+  ggtitle("2009") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 3 years educ}
+#Florida 3 years after implementation, educational attainment
+
+#create initial subset
+fl3yrs_educ <- subset(floridamoms, floridamoms$YEAR == 2008)
+
+#create data table for regression
+fl3yrs_reg <- rdd_data(y = fl3yrs_educ$MYEDUC, x = fl3yrs_educ$YNGCH, cutpoint = 8)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl3yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara3 <- rdd_reg_np(rdd_object=fl3yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl3yrs_educ <- subset(fl3yrs_educ, fl3yrs_educ$YNGCH <= 17)
+  
+#plot regression discontinuity graph
+fl_educ_plot3 <- rdplot(fl3yrs_educ$MYEDUC, x = fl3yrs_educ$YNGCH, c = 8, p = 1, masspoints = "off", col.dots = "black", col.lines = "black", title = "2008", x.label = "Age of Youngest Child", y.label = "Years in school")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara3, from=2, to=18, by=1, plot = FALSE)
+fl_educ_bw3 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 9.016539, y = -0.069352) +
+  ggtitle("2008") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 2 years educ}
+#Florida 2 years after implementation, educational attainment
+
+#create initial subset
+fl2yrs_educ <- subset(floridamoms, floridamoms$YEAR == 2007)
+
+#create data table for regression
+fl2yrs_reg <- rdd_data(y = fl2yrs_educ$MYEDUC, x = fl2yrs_educ$YNGCH, cutpoint = 7)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl2yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara2 <- rdd_reg_np(rdd_object=fl2yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl2yrs_educ <- subset(fl2yrs_educ, fl2yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_educ_plot2 <- rdplot(fl2yrs_educ$MYEDUC, x = fl2yrs_educ$YNGCH, c = 7, p = 1, masspoints = "off", col.dots = "black", col.lines = "black", title = "2007", x.label = "Age of Youngest Child", y.label = "Years in school")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara2, from=2, to=18, by=1, plot = FALSE)
+fl_educ_bw2 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 9.443095, y = 0.0044192) +
+  ggtitle("2007") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r grid plots educ}
+#make grid plots
+
+educ_fl_grid <- grid.arrange(grobs = list(fl_educ_plot2$rdplot, fl_educ_plot3$rdplot, fl_educ_plot4$rdplot, fl_educ_plot5$rdplot), ncol = 2, nrow = 2, top = "Educational Attainment of Mothers in Florida")
+
+educ_fl_bw_grid <- grid.arrange(grobs = list(fl_educ_bw2, fl_educ_bw3, fl_educ_bw4, fl_educ_bw5), ncol = 2, nrow = 2, top = "Bandwidth Sensitivity Tests - Educational Attainment of Mothers in Florida")
+
+```
+## Bachelor's Degree
+
+```{r Florida 2 years bachelors}
+#Florida 2 years after implementation, bachelors
+
+#create initial subset
+fl2yrs_bachelor <- subset(floridamoms, floridamoms$YEAR == 2007)
+
+#create data table for regression
+fl2yrs_reg <- rdd_data(y = fl2yrs_bachelor$bachelor, x = fl2yrs_bachelor$YNGCH, cutpoint = 7)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl2yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara2 <- rdd_reg_np(rdd_object=fl2yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl2yrs_bachelor <- subset(fl2yrs_bachelor, fl2yrs_bachelor$YNGCH >= 1 & fl2yrs_bachelor$YNGCH <= 13)
+
+print(nrow(fl2yrs_bachelor))
+  
+#plot regression discontinuity graph
+fl_bachelor_plot2 <- rdplot(y = fl2yrs_bachelor$bachelor, x = fl2yrs_bachelor$YNGCH, c = 7, p = 1, col.dots = "black", col.lines = "black", title = "2007", x.label = "Age of Youngest Child", y.label = "% Bachelor's Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara2, from=2, to=18, by=1, plot = FALSE)
+fl_bachelor_bw2 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 6.161375, y = -0.041500) +
+  ggtitle("2007") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 3 years bachelor}
+#Florida 3 years after implementation, bachelors
+
+#create initial subset
+fl3yrs_bachelor <- subset(floridamoms, floridamoms$YEAR == 2008)
+
+#create data table for regression
+fl3yrs_reg <- rdd_data(y = fl3yrs_bachelor$bachelor, x = fl3yrs_bachelor$YNGCH, cutpoint = 8)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl3yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara3 <- rdd_reg_np(rdd_object=fl3yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl3yrs_bachelor <- subset(fl3yrs_bachelor, fl3yrs_bachelor$YNGCH >= 2 & fl3yrs_bachelor$YNGCH <= 14)
+
+print(nrow(fl3yrs_bachelor))
+
+#plot regression discontinuity graph
+fl_bachelor_plot3 <- rdplot(y = fl3yrs_bachelor$bachelor, x = fl3yrs_bachelor$YNGCH, c = 8, p = 1, col.dots = "black", col.lines = "black", title = "2008", x.label = "Age of Youngest Child", y.label = "% Bachelor's degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara3, from=2, to=18, by=1, plot = FALSE)
+fl_bachelor_bw3 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 6.685717, y = -0.008102) +
+  ggtitle("2008") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 4 years bachelors}
+#Florida 4 years after implementation, bachelors
+
+#create initial subset
+fl4yrs_bachelor <- subset(floridamoms, floridamoms$YEAR == 2009)
+
+#create data table for regression
+fl4yrs_reg <- rdd_data(y = fl4yrs_bachelor$bachelor, x = fl4yrs_bachelor$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=fl4yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_bachelor <- subset(fl4yrs_bachelor, fl4yrs_bachelor$YNGCH >= 2 & fl4yrs_bachelor$YNGCH <= 16)
+print(nrow(fl4yrs_bachelor))
+
+#plot regression discontinuity graph
+fl_bachelor_plot4 <- rdplot(y = fl4yrs_bachelor$bachelor, x = fl4yrs_bachelor$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "2009", x.label = "Age of Youngest Child", y.label = "% Bachelor's Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara4, from=2, to=18, by=1, plot = FALSE)
+fl_bachelor_bw4 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 7.742408, y = 0.019400) +
+  ggtitle("2009") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 5 years bachelors}
+#Florida five years after implementation, bachelors
+
+#create initial subset
+fl5yrs_bachelor <- subset(floridamoms, floridamoms$YEAR == 2010)
+
+#create data table for regression
+fl5yrs_reg <- rdd_data(y = fl5yrs_bachelor$bachelor, x = fl5yrs_bachelor$YNGCH, cutpoint = 10)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl5yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara5 <- rdd_reg_np(rdd_object=fl5yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl5yrs_bachelor <- subset(fl5yrs_bachelor, fl5yrs_bachelor$YNGCH >= 5 & fl5yrs_bachelor$YNGCH <= 15)
+
+print(nrow(fl5yrs_bachelor))
+  
+#plot regression discontinuity graph
+fl_bachelor_plot5 <- rdplot(fl5yrs_bachelor$bachelor, x = fl5yrs_bachelor$YNGCH, c = 10, p = 1, col.dots = "black", col.lines = "black", title = "2010", x.label = "Age of Youngest Child", y.label = "% Bachelor's Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara5, from=2, to=18, by=1, plot = FALSE)
+fl_bachelor_bw5 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x =  5.823497, y = -0.030540) +
+  ggtitle("2010") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r grid plots bachelor}
+#make grid plots
+
+bachelor_fl_grid <- grid.arrange(grobs = list(fl_bachelor_plot2$rdplot, fl_bachelor_plot3$rdplot, fl_bachelor_plot4$rdplot, fl_bachelor_plot5$rdplot), ncol = 2, nrow = 2, top = "Rate of Bachelor's Degrees for Mothers in Florida")
+
+bachelor_fl_bw_grid <- grid.arrange(grobs = list(fl_bachelor_bw2, fl_bachelor_bw3, fl_bachelor_bw4, fl_bachelor_bw5), ncol = 2, nrow = 2, top = "Bandwidth Sensitivity Tests - Rate of Bachelor's Degrees for Mothers in Florida")
+
+```
+
+### All Degrees
+
+```{r Florida 2 years any degree}
+#Florida 2 years after implementation, any degree
+
+#create initial subset
+fl2yrs_all <- subset(floridamoms, floridamoms$YEAR == 2007)
+
+#create data table for regression
+fl2yrs_reg <- rdd_data(y = fl2yrs_all$associates_or_up, x = fl2yrs_all$YNGCH, cutpoint = 7)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl2yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara2 <- rdd_reg_np(rdd_object=fl2yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl2yrs_all <- subset(fl2yrs_all, fl2yrs_all$YNGCH <= 14)
+  
+#plot regression discontinuity graph
+fl_all_plot2 <- rdplot(y = fl2yrs_all$associates_or_up, x = fl2yrs_all$YNGCH, c = 7, p = 1, masspoints = "off", col.dots = "black", col.lines = "black", title = "2007", x.label = "Age of Youngest Child", y.label = "% Any College Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara2, from=2, to=18, by=1, plot = FALSE)
+fl_all_bw2 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 7.954536 , y = -0.01822) +
+  ggtitle("2007") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 3 years any degree}
+#Florida 3 years after implementation, any degree
+
+#create initial subset
+fl3yrs_all <- subset(floridamoms, floridamoms$YEAR == 2008)
+
+#create data table for regression
+fl3yrs_reg <- rdd_data(y = fl3yrs_all$associates_or_up, x = fl3yrs_all$YNGCH, cutpoint = 8)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl3yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara3 <- rdd_reg_np(rdd_object=fl3yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl3yrs_all <- subset(fl3yrs_all, fl3yrs_all$YNGCH <= 16)
+
+#plot regression discontinuity graph
+fl_all_plot3 <- rdplot(y = fl3yrs_all$associates_or_up, x = fl3yrs_all$YNGCH, c = 8, p = 1, masspoints = "off", col.dots = "black", col.lines = "black", title = "2008", x.label = "Age of Youngest Child", y.label = "% Any College Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara3, from=2, to=18, by=1, plot = FALSE)
+fl_all_bw3 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 8.717611, y = -0.008538) +
+  ggtitle("2008") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 4 years any degree}
+#Florida 4 years after implementation, any degree
+
+#create initial subset
+fl4yrs_all <- subset(floridamoms, floridamoms$YEAR == 2009)
+
+#create data table for regression
+fl4yrs_reg <- rdd_data(y = fl4yrs_all$associates_or_up, x = fl4yrs_all$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=fl4yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+
+
+#plot regression discontinuity graph
+fl_all_plot4 <- rdplot(y = fl4yrs_all$associates_or_up, x = fl4yrs_all$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "2009", x.label = "Age of Youngest Child", y.label = "% Any College Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara4, from=2, to=18, by=1, plot = FALSE)
+fl_all_bw4 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 11.96996, y = 0.00029974) +
+  ggtitle("2009") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+
+```
+
+```{r Florida 5 years any degree}
+#Florida five years after implementation, any degree
+
+#create initial subset
+fl5yrs_all <- subset(floridamoms, floridamoms$YEAR == 2010)
+
+#create data table for regression
+fl5yrs_reg <- rdd_data(y = fl5yrs_all$associates_or_up, x = fl5yrs_all$YNGCH, cutpoint = 10)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl5yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara5 <- rdd_reg_np(rdd_object=fl5yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl5yrs_all <- subset(fl5yrs_all, fl5yrs_all$YNGCH >= 5 & fl5yrs_all$YNGCH <= 15)
+  
+#plot regression discontinuity graph
+fl_all_plot5 <- rdplot(y = fl5yrs_all$associates_or_up, x = fl5yrs_all$YNGCH, c = 10, p = 1, col.dots = "black", col.lines = "black", title = "2010", x.label = "Age of Youngest Child", y.label = "% Any College Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara5, from=2, to=18, by=1, plot = FALSE)
+fl_all_bw5 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x =  5.522029, y = -0.040908) +
+  ggtitle("2010") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r grid plots all}
+#make grid plots
+
+all_fl_grid <- grid.arrange(grobs = list(fl_all_plot2$rdplot, fl_all_plot3$rdplot, fl_all_plot4$rdplot, fl_all_plot5$rdplot), ncol = 2, nrow = 2, top = "Rate of College Degrees for Mothers in Florida")
+
+all_fl_bw_grid <- grid.arrange(grobs = list(fl_all_bw2, fl_all_bw3, fl_all_bw4, fl_all_bw5), ncol = 2, nrow = 2, top = "Bandwidth Sensitivity Tests - Rate of College Degrees for Mothers in Florida")
+
+```
+
+### postgrad
+
+```{r Florida 2 years postgrad}
+#Florida 2 years after implementation, postgrad
+
+#create initial subset
+fl2yrs_post <- subset(floridamoms, floridamoms$YEAR == 2007)
+
+#create data table for regression
+fl2yrs_reg <- rdd_data(y = fl2yrs_post$postgrad, x = fl2yrs_post$YNGCH, cutpoint = 7)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl2yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara2 <- rdd_reg_np(rdd_object=fl2yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl2yrs_post <- subset(fl2yrs_post, fl2yrs_post$YNGCH <= 17)
+
+print(nrow(fl2yrs_post))
+  
+#plot regression discontinuity graph
+fl_postgrad_plot2 <- rdplot(y = fl2yrs_post$postgrad, x = fl2yrs_post$YNGCH, c = 7, p = 1, col.dots = "black", col.lines = "black", title = "2007", x.label = "Age of Youngest Child", y.label = "% Postgraduate Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara2, from=2, to=18, by=1)
+fl_postgrad_bw2 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 10.91391 , y = 0.0079179) +
+  ggtitle("2007") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 3 years postgrad}
+#Florida 3 years after implementation, postgrad
+
+#create initial subset
+fl3yrs_post <- subset(floridamoms, floridamoms$YEAR == 2008)
+
+#create data table for regression
+fl3yrs_reg <- rdd_data(y = fl3yrs_post$postgrad, x = fl3yrs_post$YNGCH, cutpoint = 8)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl3yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara3 <- rdd_reg_np(rdd_object=fl3yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl3yrs_post <- subset(fl3yrs_post, fl3yrs_post$YNGCH <= 17)
+print(nrow(fl3yrs_post))
+
+#plot regression discontinuity graph
+fl_postgrad_plot3 <- rdplot(y = fl3yrs_post$postgrad, x = fl3yrs_post$YNGCH, c = 8, p = 1, col.dots = "black", col.lines = "black", title = "2008", x.label = "Age of Youngest Child", y.label = "% Postgraduate Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara3, from=2, to=18, by=1, plot = FALSE)
+fl_postgrad_bw3 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 9.923044, y = -0.0165699) +
+  ggtitle("2008") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 4 years postgrad}
+#Florida 4 years after implementation, postgrad
+
+#create initial subset
+fl4yrs_post <- subset(floridamoms, floridamoms$YEAR == 2009)
+
+#create data table for regression
+fl4yrs_reg <- rdd_data(y = fl4yrs_post$postgrad, x = fl4yrs_post$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#adjust subset based on optimal bandwidth
+fl4yrs_post <- subset(fl4yrs_post, fl4yrs_post$YNGCH >= 1 & fl4yrs_post$YNGCH <= 17)
+print(nrow(fl4yrs_post))
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=fl4yrs_reg, bw=bw_ik))
+
+#plot regression discontinuity graph
+fl_postgrad_plot4 <- rdplot(y = fl4yrs_post$postgrad, x = fl4yrs_post$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "2009", x.label = "Age of Youngest Child", y.label = "% Postgraduate Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara4, from=2, to=18, by=1, plot = FALSE)
+fl_postgrad_bw4 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x = 8.514494, y = 0.0021557) +
+  ggtitle("2009") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+```
+
+```{r Florida 5 years postgrad}
+#Florida five years after implementation, any degree
+
+#create initial subset
+fl5yrs_post <- subset(floridamoms, floridamoms$YEAR == 2010)
+
+#create data table for regression
+fl5yrs_reg <- rdd_data(y = fl5yrs_post$postgrad, x = fl5yrs_post$YNGCH, cutpoint = 10)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl5yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara5 <- rdd_reg_np(rdd_object=fl5yrs_reg, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl5yrs_post<- subset(fl5yrs_post, fl5yrs_post$YNGCH >= 3 & fl5yrs_post$YNGCH <= 15)
+  
+#plot regression discontinuity graph
+fl_postgrad_plot5 <- rdplot(y = fl5yrs_post$postgrad, x = fl5yrs_post$YNGCH, c = 10, p = 1, col.dots = "black", col.lines = "black", title = "2010", x.label = "Age of Youngest Child", y.label = "% Postgraduate Degree")
+
+#bandwidth sensitivity test
+bw_test <- plotSensi(reg_nonpara5, from=2, to=18, by=1, plot = FALSE)
+fl_postgrad_bw5 <- ggplot(bw_test, aes(x=bw, y=LATE)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high),alpha=0.2) +
+  geom_point(x =  11.90277, y = -0.00028711) +
+  ggtitle("2010") +
+  xlab("Bandwidth") +
+  ylab("Treatment effect") +
+  geom_hline(yintercept = 0, alpha = 0.5)
+
+```
+
+```{r grid plots postgrad}
+#make grid plots
+
+postgrad_fl_grid <- grid.arrange(grobs = list(fl_postgrad_plot2$rdplot, fl_postgrad_plot3$rdplot, fl_postgrad_plot4$rdplot, fl_postgrad_plot5$rdplot), ncol = 2, nrow = 2, top = "Rate of Postgraduate Degrees for Mothers in Florida")
+
+postgrad_fl_bw_grid <- grid.arrange(grobs = list(fl_postgrad_bw2, fl_postgrad_bw3, fl_postgrad_bw4, fl_postgrad_bw5), ncol = 2, nrow = 2, top = "Bandwidth Sensitivity Tests - Rate of Postgraduate Degrees for Mothers in Florida")
+
+```
+
+
+### Discontinuity Assumption
+This checks whether important demographic variables are continuous at the cutoff point to ensure that any discontinuity found is only due to the change in treatment.
+
+```{r continuity check - percent white}
+#create data table for regression
+race_test <- rdd_data(y = fl4yrs_educ$white, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=race_test, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_raceplot <- rdplot(fl4yrs_educ$white*100, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Percent White", x.label = "Age of Youngest Child", y.label = "% White")
+```
+```{r continuity check - percent black}
+#create data table for regression
+race_test1 <- rdd_data(y = fl4yrs_educ$black, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=race_test1, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_raceplot1 <- rdplot(fl4yrs_educ$black*100, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Percent Black", x.label = "Age of Youngest Child", y.label = "% Black")
+```
+
+```{r continuity check - age}
+#create data table for regression
+age_test <- rdd_data(y = fl4yrs_educ$AGE, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=age_test, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_ageplot <- rdplot(fl4yrs_educ$AGE, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Age of Mother", x.label = "Age of Youngest Child", y.label = "Age")
+```
+
+```{r continuity check - income}
+#create data table for regression
+income_test <- rdd_data(y = fl4yrs_educ$HHINCOME/1000, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=income_test, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_incomeplot <- rdplot(fl4yrs_educ$HHINCOME/1000, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Household Income", x.label = "Age of Youngest Child", y.label = "Income (thousands)")
+```
+
+```{r continuity check - percent married}
+#create data table for regression
+married_test <- rdd_data(y = fl4yrs_educ$married, x = fl4yrs_educ$YNGCH, cutpoint = 9)
+
+#find optimal bandwidth
+bw_ik <- rdd_bw_ik(fl4yrs_reg)
+
+#run regression based on optimal bandwidth
+(reg_nonpara4 <- rdd_reg_np(rdd_object=married_test, bw=bw_ik))
+
+#adjust subset based on optimal bandwidth
+fl4yrs_educ <- subset(fl4yrs_educ, fl4yrs_educ$YNGCH >= 2 & fl4yrs_educ$YNGCH <= 16)
+  
+#plot regression discontinuity graph
+fl_marriedplot<- rdplot(fl4yrs_educ$married*100, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Marital Status", x.label = "Age of Youngest Child", y.label = "% Married")
+```
+
+```{r Continuity Tests}
+continuity_fl_grid <- grid.arrange(grobs = list(fl_raceplot$rdplot, fl_raceplot1$rdplot, fl_incomeplot$rdplot, fl_ageplot$rdplot, fl_marriedplot$rdplot), ncol = 3, nrow = 2, top = "Covariate Continuity Tests - Florida")
+```
+
+### Bin Size
+```{r}
+#regular regression discontinuity graph, nbins = 3
+fl_bin3 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "3 bins", x.label = "Age of Youngest Child", y.label = "Years in School", nbins = 3)
+
+#regular regression discontinuity graph, nbins = 5
+fl_bin5 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "5 bins", x.label = "Age of Youngest Child", y.label = "Years in School", nbins = 5)
+
+#regular regression discontinuity graph, nbins = 10
+fl_bin10 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "10 bins", x.label = "Age of Youngest Child", y.label = "Years in School", nbins = 10)
+
+#regular regression discontinuity graph, nbins = 50
+fl_bin50 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "50 bins", x.label = "Age of Youngest Child", y.label = "Years in School", nbins = 50)
+```
+
+```{r bin size test grid}
+bin_fl_grid <- grid.arrange(grobs = list(fl_bin3$rdplot, fl_bin5$rdplot, fl_bin10$rdplot, fl_bin50$rdplot), ncol = 2, nrow = 2, top = "Bin Size Test - Florida")
+```
+
+
+### Polynomials
+```{r}
+#regular regression discontinuity graph, p = 1
+fl_poly1 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 1, col.dots = "black", col.lines = "black", title = "Linear", x.label = "Age of Youngest Child", y.label = "Years in School")
+
+#regular regression discontinuity graph, p = 2
+fl_poly2 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 2, col.dots = "black", col.lines = "black", title = "Polynomial = 2", x.label = "Age of Youngest Child", y.label = "Years in School")
+
+#regular regression discontinuity graph, p = 3
+fl_poly3 <-rdplot(fl4yrs_educ$MYEDUC, x = fl4yrs_educ$YNGCH, c = 9, p = 3, col.dots = "black", col.lines = "black", title = "Polynomial = 3", x.label = "Age of Youngest Child", y.label = "Years in School")
+
+```
+
+```{r}
+bin_fl_grid <- grid.arrange(grobs = list(fl_poly1$rdplot, fl_poly2$rdplot, fl_poly3$rdplot), ncol = 2, nrow = 2, top = "Polynomial Test - Florida")
+```
