@@ -1,6 +1,8 @@
 # From Crayons to Diplomas: The Impact of State Preschool Programs on Mothers in Florida and Washington, DC
 This repository includes the data, code, executive summary, and write up for my Capstone project. The study is an analysis of the impact of state preschool programs on maternal educational outcomes in DC and Florida.
 
+My full writeup is included in this repository as "Final Capstone.pdf", and my Executive Summary is uploaded here as "Executive Summary.pdf".
+
 **Abstract:** Access to affordable child care through programs like universal public preschool offers time to parents (and mothers in particular) who may otherwise stay home to care for their child. Using data from the American Community Survey (ACS), I explore whether mothers use this time to pursue further education. I use Florida and Washington, DC’s universal preschool programs as case studies. Regression discontinuity design allows me to take advantage of age eligibility cutoffs in both programs. I find little to no effect on all educational outcomes in Florida. In Washington, DC, I find that mothers whose youngest child was young enough to enroll in public preschool in 2009 had slightly higher educational attainment (around 1.4 years, statistically significant at a 10% singificance level) than mothers whose child was slightly too old to enroll. However, the results across all outcomes fluctuate, potentially due to limitations in the data.
 
 **Accessing the data:**
